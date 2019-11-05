@@ -1,0 +1,34 @@
+<html>
+	<head>
+        <title>Test Database</title>
+    </head>
+    <body>
+       
+        <h1>Test Database</h1>
+        {{ if .Users }}
+            <ul>
+                {{ range .Users }}
+                    <li>{{.ID}}: {{.Username}} {{.Password}}</li>
+                {{end}}
+            </ul>
+            <form method="post" action="/add">
+                <h3>Add new user</h3>
+                <label for="id">ID</label>
+                <input type="text" name="id" value="{{.Next}}" disabled><br />
+                <label for="username">Username</label>
+                <input type="text" name="username"><br />
+                <label for="password">Password</label>
+                <input type="password" name="password"><br />
+                <input type="submit" value="Add User">
+            </form>
+        {{ else }}
+            <h3>Database Environment Variables</h3>
+            <ul>
+                <li>MYSQL_USER: {{ .MYSQL_USER }} </li>
+                <li>MYSQL_PASSWORD: {{ .MYSQL_PASSWORD }} </li>
+                <li>MYSQL_DATABASE: {{ .MYSQL_DATABASE }}</li>
+                <li>MYSQL_HOST: {{ .MYSQL_HOST }}</li>
+            </ul>
+        {{ end }}
+    </body>
+</html>
