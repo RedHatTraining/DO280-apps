@@ -2,13 +2,13 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 // Global variables
@@ -16,10 +16,9 @@ import (
 var username, password, database, host string
 var DB *sql.DB
 
-type User struct {
-	ID       int
-	Username string
-	Password string
+type Quote struct {
+	ID      int
+	Message string
 }
 
 func main() {
@@ -28,16 +27,19 @@ func main() {
 	database, _ = os.LookupEnv("MYSQL_DATABASE")
 	host, _ = os.LookupEnv("MYSQL_HOST")
 	DB = db_connect(username, password, database, host)
+	if DB == nil {
+		log.Printf("Could not connect to the databse: %s", database)
+	}
 	defer DB.Close()
-	Setup()
+	setup()
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
-	r.HandleFunc("/get", HomeHandler)
-	r.HandleFunc("/add", AddHandler)
+	r.HandleFunc("/random", RandHandler)
 	r.HandleFunc("/env", EnvHandler)
+	r.HandleFunc("/status", StatusHandler)
 	http.Handle("/", r)
-	log.Printf("Starting Application\nServices:\n/\n/get\n/add")
+	log.Printf("Starting Application\nServices:\n/\n/random\n/env\n/status")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
 
@@ -45,22 +47,29 @@ func main() {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("layout.html"))
-	err := DB.Ping()
-	if err != nil {
-		panic(err.Error())
-	}
-	users := get_data()
-	next := users[len(users)-1].ID + 1
+	quotes := get_all_quotes()
 	data := struct {
-		Users []User
-		Next  int
+		Quotes []Quote
 	}{
-		users,
-		next,
+		quotes,
 	}
-	err = tmpl.Execute(w, data)
+	err := tmpl.Execute(w, data)
 	if err != nil {
 		log.Printf("Error while executing template: %s", err)
+	}
+}
+
+func RandHandler(w http.ResponseWriter, r *http.Request) {
+	quote := get_random_quote()
+	fmt.Fprintf(w, "%d: %s", quote.ID, quote.Message)
+}
+
+func StatusHandler(w http.ResponseWriter, r *http.Request) {
+	err := DB.Ping()
+	if err != nil {
+		fmt.Fprintf(w, "Database connection error: %s", err)
+	} else {
+		fmt.Fprintf(w, "Database connection OK\n")
 	}
 }
 
@@ -71,7 +80,7 @@ func EnvHandler(w http.ResponseWriter, r *http.Request) {
 		MYSQL_PASSWORD string
 		MYSQL_DATABASE string
 		MYSQL_HOST     string
-		Users          []User
+		Quotes         []Quote
 	}{
 		username,
 		password,
@@ -87,35 +96,56 @@ func EnvHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func AddHandler(w http.ResponseWriter, r *http.Request) {
-	i, _ := strconv.Atoi(r.FormValue("id"))
-	u := r.FormValue("username")
-	p := r.FormValue("password")
-	insert_data(User{
-		ID:       i,
-		Username: u,
-		Password: p,
-	})
-	log.Printf("New user added\n")
-	http.Redirect(w, r, "http://localhost:8000/", http.StatusFound)
-}
-
 func Setup() {
+	var messages = []string{
+		"When words fail, music speaks.\n- William Shakespeare\n",
+		"Happines depends upon ourselves.\n- Aristotle\n",
+		"The secret of change is to focus all your energy not on fighting the old but on building the new.\n- Socrates\n",
+		"Nothing that glitters is gold.\n- Mark Twain",
+		"Imagination is more important than knowledge.\n- Albert Einstein\n",
+		"Hell, if I could explain it to the average person, it wouldn't have been worth the Nobel prize.\n- Richard Feynman\n",
+		"Young man, in mathematics you don't understand things. You just get used to them.\n- John von Neumann\n",
+		"Those who can imagine anything, can create the impossible.\n- Alan Turing\n",
+	}
 	log.Print("Creating schema")
 	db_create_schema()
 	log.Printf("Database Setup Completed\n")
-	insert_data(User{
-		ID:       1,
-		Username: "FirstUser",
-		Password: "FirstPass",
-	})
-
+	for _, s := range messages {
+		insert_data(s)
+	}
 }
 
 // Data functions
 
+func setup() {
+	var rows string
+
+	// Check if the databse connection is active
+	err := DB.Ping()
+	if err != nil {
+		log.Fatalf("Database connection error: %s", err)
+	} else {
+		log.Printf("Database connection OK\n")
+	}
+
+	// Get table rows to check if there's data already
+	err = DB.QueryRow("SELECT count(*) FROM quotes").Scan(&rows)
+	if err == nil && rows != "0" {
+		log.Printf("Database already setup, ignoring")
+		return
+	}
+
+	log.Print("Creating schema")
+	db_create_schema()
+	log.Print("Adding quotes")
+	for _, s := range messages {
+		insert_data(s)
+	}
+	log.Printf("Database Setup Completed\n")
+}
+
 func db_create_schema() {
-	crt, err := DB.Prepare("CREATE TABLE test_mysql (id int NOT NULL AUTO_INCREMENT, username varchar(20), password varchar(20), CONSTRAINT id_pk PRIMARY KEY (id))")
+	crt, err := DB.Prepare("CREATE TABLE quotes (id int NOT NULL AUTO_INCREMENT, message text, CONSTRAINT id_pk PRIMARY KEY (id))")
 	if err != nil {
 		log.Printf("Error preparing the database creation: %s", err)
 	}
@@ -131,36 +161,52 @@ func db_connect(username string, password string, database string, host string) 
 	log.Print("Connecting to the database: " + connstring)
 	db, err := sql.Open("mysql", connstring)
 	if err != nil {
-		panic(err.Error())
+		log.Printf("Error preparing database connection:%s", err.Error())
+		return nil
 	}
+
 	return db
 }
 
-func insert_data(user User) {
-	stmtIns, err := DB.Prepare("INSERT INTO test_mysql VALUES( ?, ?, ? )")
+func insert_data(message string) {
+	stmtIns, err := DB.Prepare("INSERT INTO quotes (message) VALUES( ? )")
+	log.Printf("Adding quote: %s", message)
 	if err != nil {
 		panic(err.Error())
 	}
-	stmtIns.Exec(user.ID, user.Username, user.Password)
-	log.Printf("Data added\n")
+
+	_, err = stmtIns.Exec(message)
+	if err != nil {
+		panic(err.Error())
+	}
 	stmtIns.Close()
 
 }
 
-func get_data() []User {
+func get_all_quotes() []Quote {
 	var id int
-	var username string
-	var password string
-	var users []User
-	rows, err := DB.Query("SELECT id, username, password FROM test_mysql order by id asc")
+	var message string
+	var quotes []Quote
+	rows, err := DB.Query("SELECT id, message FROM quotes order by id asc")
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&id, &username, &password)
+		err = rows.Scan(&id, &message)
 		if err != nil {
 			log.Printf("Error: %v", err.Error())
 		}
-		users = append(users, User{ID: id, Username: username, Password: password})
-		log.Printf("Users: %d", len(users))
+		quotes = append(quotes, Quote{ID: id, Message: message})
 	}
-	return users
+	return quotes
+}
+
+func get_random_quote() Quote {
+	var id int
+	var message string
+	err := DB.QueryRow("SELECT id, message FROM quotes order by RAND() LIMIT 1").Scan(&id, &message)
+	if err != nil {
+		log.Printf("Error: %v", err.Error())
+	}
+
+	log.Printf("Quote: %s", message)
+	return Quote{ID: id, Message: message}
 }
