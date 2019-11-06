@@ -1,6 +1,23 @@
 FROM golang:1.12
 LABEL maintainer="ichavero@chavero.com.mx"
 
+ENV MYSQL_VERSION=1.0 \
+    SUMMARY="Famous Quotes" \
+    DESCRIPTION="Famous Quotes is a PoC application for Go and MySQL"
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="Quotes 1.0" \
+      io.openshift.expose-services="8000:quotes" \
+      io.openshift.tags="poc,mysql,golang" \
+      name="redhattraining/famous-quotes" \
+      version="1.0" \
+      usage="docker run -d -e MYSQL_USER=user -e MYSQL_PASSWORD=pass -e MYSQL_DATABASE=db -p 8000:8000 redhattraining/famous-quotes" \
+      maintainer="Iván Chavero <ichavero@chavero.com.mx>"
+
+EXPOSE 8000
+
 RUN mkdir -p /go/src/github.com/openshift/famous-quotes
 WORKDIR /go/src/github.com/openshift/famous-quotes
 
