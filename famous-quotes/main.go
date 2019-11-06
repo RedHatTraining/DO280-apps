@@ -25,7 +25,7 @@ func main() {
 	username, _ = os.LookupEnv("MYSQL_USER")
 	password, _ = os.LookupEnv("MYSQL_PASSWORD")
 	database, _ = os.LookupEnv("MYSQL_DATABASE")
-	host, _ = os.LookupEnv("MYSQL_HOST")
+	host, _ = os.LookupEnv("MYSQL_HOSTNAME")
 	DB = db_connect(username, password, database, host)
 	if DB == nil {
 		log.Printf("Could not connect to the databse: %s", database)
