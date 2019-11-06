@@ -96,7 +96,10 @@ func EnvHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Setup() {
+// Data functions
+
+func setup() {
+	var rows string
 	var messages = []string{
 		"When words fail, music speaks.\n- William Shakespeare\n",
 		"Happines depends upon ourselves.\n- Aristotle\n",
@@ -107,18 +110,6 @@ func Setup() {
 		"Young man, in mathematics you don't understand things. You just get used to them.\n- John von Neumann\n",
 		"Those who can imagine anything, can create the impossible.\n- Alan Turing\n",
 	}
-	log.Print("Creating schema")
-	db_create_schema()
-	log.Printf("Database Setup Completed\n")
-	for _, s := range messages {
-		insert_data(s)
-	}
-}
-
-// Data functions
-
-func setup() {
-	var rows string
 
 	// Check if the databse connection is active
 	err := DB.Ping()
