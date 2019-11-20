@@ -1,7 +1,7 @@
 FROM golang:1.12
 LABEL maintainer="ichavero@chavero.com.mx"
 
-ENV MYSQL_VERSION=1.0 \
+ENV QUOTES_VERSION=1.0 \
     SUMMARY="Famous Quotes" \
     DESCRIPTION="Famous Quotes is a PoC application for Go and MySQL"
 
@@ -13,7 +13,7 @@ LABEL summary="$SUMMARY" \
       io.openshift.tags="poc,mysql,golang" \
       name="redhattraining/famous-quotes" \
       version="1.0" \
-      usage="docker run -d -e MYSQL_USER=user -e MYSQL_PASSWORD=pass -e MYSQL_DATABASE=db -p 8000:8000 redhattraining/famous-quotes" \
+      usage="docker run -d -e QUOTES_USER=user -e QUOTES_PASSWORD=pass -e QUOTES_DATABASE=db -p 8000:8000 redhattraining/famous-quotes" \
       maintainer="Iván Chavero <ichavero@chavero.com.mx>"
 
 EXPOSE 8000
