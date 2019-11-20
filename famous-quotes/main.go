@@ -22,10 +22,10 @@ type Quote struct {
 }
 
 func main() {
-	username, _ = os.LookupEnv("MYSQL_USER")
-	password, _ = os.LookupEnv("MYSQL_PASSWORD")
-	database, _ = os.LookupEnv("MYSQL_DATABASE")
-	host, _ = os.LookupEnv("MYSQL_HOSTNAME")
+	username, _ = os.LookupEnv("QUOTES_USER")
+	password, _ = os.LookupEnv("QUOTES_PASSWORD")
+	database, _ = os.LookupEnv("QUOTES_DATABASE")
+	host, _ = os.LookupEnv("QUOTES_HOSTNAME")
 	DB = db_connect(username, password, database, host)
 	if DB == nil {
 		log.Printf("Could not connect to the databse: %s", database)
@@ -76,11 +76,11 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 func EnvHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("layout.html"))
 	data := struct {
-		MYSQL_USER     string
-		MYSQL_PASSWORD string
-		MYSQL_DATABASE string
-		MYSQL_HOST     string
-		Quotes         []Quote
+		QUOTES_USER     string
+		QUOTES_PASSWORD string
+		QUOTES_DATABASE string
+		QUOTES_HOST     string
+		Quotes          []Quote
 	}{
 		username,
 		password,
@@ -92,7 +92,7 @@ func EnvHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error while executing template: %s", err)
 	}
-	log.Printf("Database Setup Variables:\nMYSQL_USER: %s\nMYSQL_PASSWORD: %s\nMYSQL_DATABASE: %s\nMYSQL_HOST: %s\n", username, password, database, host)
+	log.Printf("Database Setup Variables:\nQUOTES_USER: %s\nQUOTES_PASSWORD: %s\nQUOTES_DATABASE: %s\nQUOTES_HOST: %s\n", username, password, database, host)
 
 }
 
