@@ -1,0 +1,57 @@
+<div class="page-header">
+    <h1>Create ToDo Item</h1>
+</div>
+
+<div id="alertContainer"></div>
+
+<form class="form-horizontal" ng-submit="submit()">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="description" class="control-label col-sm-4">Name</label>
+                <div class="col-sm-8">
+                    <input type="text" focus-on="focusMe" id="description" class="form-control" ng-model="todoItem.name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="category" class="control-label col-sm-4">Category</label>
+                <div class="col-sm-8">
+                    <input type="text" id="category" class="form-control" ng-model="todoItem.category">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="complete" class="control-label col-sm-4">Complete?</label>
+                <div class="col-sm-8">
+                    <input type="text" id="complete" class="form-control" ng-model="todoItem.complete">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="dueBy" class="control-label col-sm-4">Due by</label>
+                <div class="col-sm-8">
+                    <input type="text" id="dueBy" class="form-control" ng-model="todoItem.dueBy">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cost" class="control-label col-sm-4">Cost</label>
+                <div class="col-sm-8">
+                    <input type="text" id="cost" class="form-control" ng-model="todoItem.cost">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="notes" class="control-label col-sm-4">Notes</label>
+                <div class="col-sm-8">
+                    <textarea id="notes" class="form-control" ng-model="todoItem.notes"
+                              bs-tooltip data-title="Any additional information about the todo item."
+                              data-trigger="focus" data-placement="bottom"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group well">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input type="submit" class="btn btn-primary" value="Create">
+        </div>
+    </div>
+</form>

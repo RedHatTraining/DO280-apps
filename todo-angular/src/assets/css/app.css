@@ -1,0 +1,11 @@
+a.form-control-static.editable-click {
+    display: block;
+    border-bottom: none;
+}
+.form-control-static pre {
+    background-color: transparent;
+}
+
+.btn .label {
+    padding-left: 5px;
+}

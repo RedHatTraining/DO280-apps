@@ -1,0 +1,33 @@
+<div class="page-header">
+    <h1>Stuff to do...</h1>
+</div>
+
+<div id="alertContainer"></div>
+
+<div class="table-responsive">
+
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Complete?</th>
+                <th>Due by</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="todoItem in todoItems | filter:search">
+                <td>
+                    <a ui-sref="edit({id:{{$index}}})">{{todoItem.description}}</a>
+                </td>
+                <td>{{todoItem.category}}</td>
+                <td>{{todoItem.complete}}</td>
+                <td>{{todoItem.dueBy | date:'dd-MMM-yyyy'}}</td>
+                <td>
+                    <button class="btn btn-danger btn-xs" ng-click="delete($index)"><span class="glyphicon glyphicon-remove"></span><span class="label">Delete</span></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

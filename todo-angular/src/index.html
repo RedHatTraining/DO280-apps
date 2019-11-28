@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="todoItemsApp" ng-controller="appCtl">
+<head>
+    <meta charset="utf-8">
+    <title>ToDo app</title>
+
+    <link rel="stylesheet" href="assets/css/libs/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="assets/css/libs/angular-motion/angular-motion.css">
+    <link rel="stylesheet" href="assets/css/libs/angular-xeditable/xeditable.css">
+
+    <link rel="stylesheet" href="assets/css/app.css">
+
+    <script type="text/javascript" src="assets/js/libs/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="assets/js/libs/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/js/libs/angular/angular.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/libs/angular/angular-route.min.js"></script>
+    <script type="text/javascript" src="assets/js/libs/angular/angular-animate.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/libs/angular-ui-router/angular-ui-router.js"></script>
+
+    <script type="text/javascript" src="assets/js/libs/angular-strap/angular-strap.js"></script>
+    <script type="text/javascript" src="assets/js/libs/angular-strap/angular-strap.tpl.js"></script>
+    <script type="text/javascript" src="assets/js/libs/angular-xeditable/xeditable.js"></script>
+
+    <script type="text/javascript" src="assets/js/libs/angular/angular-sanitize.js"></script>
+    <script type="text/javascript" src="assets/js/app/utils/md5.js"></script>
+
+    <script type="text/javascript" src="assets/js/app/module.js"></script>
+    <script type="text/javascript" src="assets/js/app/states/states.js"></script>
+
+    <script type="text/javascript" src="assets/js/app/domain/todoitems.js"></script>
+    <script type="text/javascript" src="assets/js/app/ui/filters.js"></script>
+
+    <script type="text/javascript" src="assets/js/app/ui/focus.js"></script>
+    <script type="text/javascript" src="assets/js/app/ui/gravatar.js"></script>
+    <script type="text/javascript" src="assets/js/app/ui/editable.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-toggle">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">ToDo App</a>
+    </div>
+    <div class="collapse navbar-collapse" id="nav-toggle">
+        <ul class="nav navbar-nav">
+            <li ui-sref-active="active"><a ui-sref="list">Browse</a></li>
+            <li ui-sref-active="active"><a ui-sref="create">Create</a></li>
+        </ul>
+        <form class="navbar-form navbar-right" role="search">
+            <input type="text" class="form-control" placeholder="Search" ng-model="search.description" ng-keyup="startSearch()">
+        </form>
+    </div>
+
+</nav>
+<div class="container">
+    <div ui-view></div>
+</div>
+
+</body>
+</html>
