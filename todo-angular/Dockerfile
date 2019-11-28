@@ -10,7 +10,12 @@ RUN yum install -y --disableplugin=subscription-manager --nodocs \
   nginx nginx-mod-http-perl \
   && yum clean all
 
-COPY nginx.conf /etc/nginx/
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+# SSL - these two directive install the SSL configuration file
+# This copies the Diffie-Hellman settings. Used by NGinx
+COPY nginx/dhparam.pem /etc/ssl/conf/dhparam.pem
+COPY nginx/conf.d/ssl.conf /etc/nginx/conf.d/ssl.conf
+## End of SSL
 
 RUN touch /run/nginx.pid \
   && chgrp -R nginx /var/log/nginx /run/nginx.pid \
@@ -18,7 +23,7 @@ RUN touch /run/nginx.pid \
 
 COPY src/ /usr/share/nginx/html
 
-EXPOSE 8080
+EXPOSE 8080 8443
 
 USER nginx
 
