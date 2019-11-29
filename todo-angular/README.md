@@ -17,10 +17,31 @@ If you need to recreate a Diffie-Hellman group, run the following command:
 ## How to run
 
 ### In HTTP mode
-`podman run --userns keep-id  -v ./ssl/certs:/usr/local/etc/ssl/certs:Z --name todo -p 8080:8080 do280/todo-angular:latest`
+```
+podman run --userns keep-id \
+  -v ./ssl/certs:/usr/local/etc/ssl/certs:Z \
+  --name todo -p 8080:8080 \
+  do280/todo-angular:latest`
+```
 
 ### In HTTPs mode
-`podman run --userns keep-id  -v ./ssl/certs:/usr/local/etc/ssl/certs:Z --name todo -p 8443:8443 do280/todo-angular:latest`
+```
+podman run --userns keep-id \
+  -v ./ssl/certs:/usr/local/etc/ssl/certs:Z \
+  --name todo -p 8443:8443 \
+  do280/todo-angular:latest`
+```
+
+### In HTTP & HTTPS mode
+Notice the port range:
+
+```
+podman run --userns keep-id \
+  -v ./ssl/certs:/usr/local/etc/ssl/certs:Z \
+  --name test \
+  -p 8080-8443:8080-8443 \
+  do280/todo-angular:latest
+```
 
 ### Disable HTTPs support
 If you need to disable HTTPs support, run the following steps:
@@ -30,9 +51,11 @@ If you need to disable HTTPs support, run the following steps:
   # COPY nginx/dhparam.pem /etc/ssl/conf/dhparam.pem
   # COPY nginx/conf.d/ssl.conf /etc/nginx/conf.d/ssl.conf
   ```
-  2. In `nginx/nginx.conf`comment line 36
+  2. In `nginx/nginx.conf`comment line 38 & 66:
   ```
-  # include /etc/nginx/conf.d/*.conf; 
+  # include /etc/nginx/conf.d/*.conf;
+  ...
+  # error_page 497 https://$host:8443/$request_uri;
   ```
   3. Rebuild the image:
   ```
