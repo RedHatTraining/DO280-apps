@@ -51,11 +51,12 @@ If you need to disable HTTPs support, run the following steps:
   # COPY nginx/dhparam.pem /etc/ssl/conf/dhparam.pem
   # COPY nginx/conf.d/ssl.conf /etc/nginx/conf.d/ssl.conf
   ```
-  2. In `nginx/nginx.conf`comment line 38 & 66:
+  2. In `nginx/nginx.conf`comment line 38 & 66-67:
   ```
   # include /etc/nginx/conf.d/*.conf;
   ...
-  # error_page 497 https://$host:8443/$request_uri;
+  # error_page 497 https://$host:8443$request_uri;
+  # return 301 https://$host:8443$request_uri;
   ```
   3. Rebuild the image:
   ```

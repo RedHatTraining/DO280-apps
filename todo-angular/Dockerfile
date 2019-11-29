@@ -18,13 +18,13 @@ COPY nginx/conf.d/ssl.conf /etc/nginx/conf.d/ssl.conf
 ## End of SSL
 
 RUN touch /run/nginx.pid \
-  && chgrp -R nginx /var/log/nginx /run/nginx.pid \
+  && chgrp -R 0 /var/log/nginx /run/nginx.pid \
   && chmod -R g+rwx /var/log/nginx /run/nginx.pid
 
 COPY src/ /usr/share/nginx/html
 
 EXPOSE 8080 8443
 
-USER nginx
+USER 1001
 
 CMD nginx -g "daemon off;"
