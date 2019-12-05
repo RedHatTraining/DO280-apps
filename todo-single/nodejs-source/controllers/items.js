@@ -9,11 +9,10 @@ exports.context = function(server, path, itemsModel) {
     if (path)
         context = path + context;
         
-    server.get(context + '/', this.list);
-    server.get(context + '/:id', this.read);
-    server.get(context + '-count', this.count);
-    server.post(context + '/', this.save);
-    server.del(context + '/:id', this.destroy);
+    // server.get(context + '/', this.list);
+    // server.get(context + '/:id', this.read);
+    // server.post(context + '/', this.save);
+    // server.del(context + '/:id', this.destroy);
     
     model = itemsModel;
 };
@@ -25,13 +24,13 @@ exports.list = function(req, res, next) {
 
     model.listAll(page_no, sortField, sortDirection, function(err, items) {
         if (err) {
-            res.send(err);
+            next(err);
         }
         else {
             if (items) {
                 model.countAll(function(err, n) {
                     if (err) {
-                        res.send(err);
+                        next(err);
                     }
                     else {
                         if (n) {
@@ -46,11 +45,14 @@ exports.list = function(req, res, next) {
                             res.json(page);
                             next();
                         }
+                        else {
+                            next(new Error("Can't count items"));
+                        }
                     }
                 });
             }
             else {
-                res.send(err);
+                next(new Error("Can't retrieve items"));
             }
         }
     })
@@ -60,7 +62,7 @@ exports.read = function(req, res, next) {
     var key = req.params.id;
     model.read(key, function(err, item) {
         if (err) {
-            res.send(err);
+            next(err);
         }
         else {
             if (item) {
@@ -68,34 +70,18 @@ exports.read = function(req, res, next) {
                 next();
             }
             else {
-                res.send(err);
+                next(new Error("Can't retrieve items"));
             }
         }
     })
 };
 
 
-exports.count = function(req, res, next) {
-    model.countAll(function(err, n) {
-        if (err) {
-            res.send(err);
-        } 
-        else {
-            var page = { 
-              count: n
-            };
-            res.json(page)
-            next();
-        }
-    })
-};
-
-
 exports.save = function(req, res, next) {
-    if (req.params.id) {
-        model.update(req.params.id, req.params.description, req.params.done, function(err, item) {
+    if (req.body.id) {
+        model.update(req.body.id, req.body.description, req.body.done, function(err, item) {
             if (err) {
-                res.send(err);
+                next(err);
             }
             else {
                 res.json(item);
@@ -104,9 +90,9 @@ exports.save = function(req, res, next) {
         });
     }
     else {
-        model.create(req.params.description, req.params.done, function(err, item) {
+        model.create(req.body.description, req.body.done, function(err, item) {
             if (err) {
-                res.send(err);
+                next(err);
             }
             else {
                 res.json(item);
@@ -121,9 +107,10 @@ exports.destroy = function(req, res, next) {
     if (req.params.id) {
         model.destroy(req.params.id, function(err, item) {
             if (err) {
-                res.send(err);
+                next(err);
             }
             else {
+                //XXX jee_api does NOT return item on delete
                 res.json(item);
             }
         });

@@ -18,14 +18,14 @@ module.exports.connect = function(params, callback) {
         timestamps: false,
         freezeTableName: true
     });
-    
-    if (process.env.DATABASE_INIT == 'true') {
-        Item.sync({ force: true }).then(function() {
-            callback();
-        }).catch(function(err) {
-            callback(err);
-        });
-    }
+    // drop and create tables, better done globally
+    /*
+    Item.sync({ force: true }).then(function() {
+        callback();
+    }).error(function(err) {
+        callback(err);
+    });
+    */
 }
 
 exports.disconnect = function(callback) {
@@ -40,18 +40,18 @@ exports.create = function(description, done, callback) {
         done: (done) ? true : false
     }).then(function(item) {
         callback(null, item);
-    }).catch(function(err) {
+    }).error(function(err) {
         callback(err);
     });
 }
 
 exports.update = function(key, description, done, callback) {
-    Item.find({ where:{ id: key } }).then(function(item) {
+    Item.findOne({ where:{ id: key } }).then(function(item) {
         if (!item) {
             callback(new Error("Nothing found for key " + key));
         }
         else {
-            item.updateAttributes({
+            item.update({
                 description: description,
                 done: (done) ? true : false
             }).then(function() {
@@ -60,14 +60,14 @@ exports.update = function(key, description, done, callback) {
                 callback(err);
             });
         }
-    }).catch(function(err) {
+    }).error(function(err) {
         callback(err);
     });
 }
 
 
 exports.read = function(key, callback) {
-    Item.find({ where:{ id: key } }).then(function(item) {
+    Item.findOne({ where:{ id: key } }).then(function(item) {
         if (!item) {
             callback(new Error("Nothing found for key " + key));
         }
@@ -79,13 +79,13 @@ exports.read = function(key, callback) {
                 done: item.done
             });
         }
-    }).catch(function(err) {
+    }).error(function(err) {
         callback(err);
     });
 }
 
 exports.destroy = function(key, callback) {
-    Item.find({ where:{ id: key } }).then(function(item) {
+    Item.findOne({ where:{ id: key } }).then(function(item) {
         if (!item) {
             callback(new Error("Nothing found for " + key));
         }
@@ -96,19 +96,18 @@ exports.destroy = function(key, callback) {
                 callback(err);
             });
         }
-    }).catch(function(err) {
+    }).error(function(err) {
         callback(err);
     });
 }
 
 exports.countAll = function(callback) {
-    Item.findAll({
-        attributes: [[Sequelize.fn('COUNT', Sequelize.col('id')), 'no_items']]
-    }).then(function(n) {
+    Item.findAll({ attributes: [[Sequelize.fn('COUNT', Sequelize.col('id')), 'no_items']] } ).then(function(n) {
         callback(null, n[0].get('no_items'));
-    }).catch(function(err) {
+    }).error(function(err) {
         callback(err);
     });
+   //callback(null, 100);
 }
 
 exports.listAll = function(page, sortField, sortDirection, callback) {
@@ -120,7 +119,7 @@ exports.listAll = function(page, sortField, sortDirection, callback) {
                 id: item.id, description: item.description, done: item.done });
         });
         callback(null, theitems);
-    }).catch(function(err) {
+    }).error(function(err) {
         callback(err);
     });
 }
