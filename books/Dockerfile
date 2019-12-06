@@ -3,9 +3,11 @@
 FROM registry.redhat.io/ubi8/go-toolset:1.12.8 AS builder
 
 WORKDIR $HOME/go/src/books
-COPY main.go .
+COPY *.go .
 
-RUN go get -u github.com/gorilla/mux && \
+RUN go get -u \
+      github.com/gorilla/mux \
+      github.com/lib/pq && \
     go build
 
 
