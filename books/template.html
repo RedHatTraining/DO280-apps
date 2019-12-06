@@ -1,0 +1,31 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Books Example Application</title>
+</head>
+
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Author</th>
+        <th>Title</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .}}
+      <tr>
+        <td>{{.ID}}</td>
+        <td>{{.Author}}</td>
+        <td>{{.Title}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</body>
+
+</html>

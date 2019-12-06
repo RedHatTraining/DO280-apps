@@ -16,9 +16,12 @@ LABEL maintainer="jbirchler@redhat.com" \
       version="v1.0.0"
 
 WORKDIR /home
-COPY --from=builder /opt/app-root/src/go/src/books/books /home
+
+COPY --from=builder /opt/app-root/src/go/src/books/books .
+COPY template.html .
+RUN chmod 444 template.html
 
 USER nobody
 EXPOSE 8080
 
-ENTRYPOINT ["./books"]
+CMD ["./books"]
