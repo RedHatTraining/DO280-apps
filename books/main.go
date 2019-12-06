@@ -1,25 +1,17 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"time"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
 
-var port string
-
-func init() {
-	flag.StringVar(&port, "p", "8080", "Port to listen on")
-	flag.StringVar(&port, "port", "8080", "Port to listen on")
-}
+const port = "8080"
 
 func main() {
-	flag.Parse()
-
 	r := mux.NewRouter()
 	r.HandleFunc("/", homeHandler)
 	r.HandleFunc("/healthz", healthzHandler)
