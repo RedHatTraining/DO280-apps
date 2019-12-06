@@ -2,16 +2,19 @@ package main
 
 import (
 	"log"
+	"os"
 )
 
 func main() {
-	dbClose := dbConnect(dbInfo{
-		host:     "10.88.0.100",
-		port:     "5432",
-		user:     "user",
-		password: "password",
+	db := dbConnect(dbInfo{
+		host:     os.Getenv("DB_HOST"),
+		port:     os.Getenv("DB_PORT"),
+		user:     os.Getenv("DB_USER"),
+		password: os.Getenv("DB_PASSWORD"),
 		dbname:   "postgres"})
-	defer dbClose()
+	defer db.Close()
 
-	log.Fatal(listenAndServe("8080"))
+	initBooksTable(db)
+
+	log.Fatal(listenAndServe("8080", db))
 }
