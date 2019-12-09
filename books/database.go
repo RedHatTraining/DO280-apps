@@ -8,7 +8,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-
 type dbInfo struct {
 	host, port, user, password, dbname string
 }
