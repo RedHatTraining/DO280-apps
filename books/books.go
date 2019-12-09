@@ -7,9 +7,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// FIXME: add publish date?
+
 type Book struct {
 	Title, Author string
+	Year          int
 }
 
 type Books struct {
@@ -17,24 +18,28 @@ type Books struct {
 	List []Book
 }
 
+
 func (b *Books) fetch() {
 	log.Printf("Fetching books")
 
-	rows, err := b.DB.Query(`SELECT title, author FROM book ORDER BY author ASC`)
+	rows, err := b.DB.Query(`SELECT title, author, year FROM book ORDER BY author ASC`)
 	if err != nil {
 		log.Fatalf("Unable to select book table:", err)
 	}
 	defer rows.Close()
 
-  b.List = []Book{}
-  var title, author string
+	b.List = []Book{}
+	var (
+		title, author string
+		year          int
+	)
 
 	for rows.Next() {
-		err = rows.Scan(&title, &author)
+		err = rows.Scan(&title, &author, &year)
 		if err != nil {
 			log.Printf("Error: %v", err.Error())
 		}
-		b.List = append(b.List, Book{Title: title, Author: author})
+		b.List = append(b.List, Book{Title: title, Author: author, Year: year})
 	}
 }
 
@@ -43,13 +48,14 @@ func (b *Books) populate() {
 
 	_, err := b.DB.Query(`DROP TABLE book`)
 	if err != nil {
-		log.Fatalf("Unable to drop book table:", err)
+		log.Printf("Unable to drop book table:", err)
 	}
 
 	_, err = b.DB.Query(`CREATE TABLE book
     (id serial primary key,
     title text NOT NULL,
-    author varchar(255) NOT NULL)`)
+    author varchar(255) NOT NULL,
+    year smallint)`)
 	if err != nil {
 		log.Fatalf("Unable to create book table:", err)
 	}
@@ -57,7 +63,7 @@ func (b *Books) populate() {
 	log.Printf("Populating book table")
 
 	for _, book := range seed {
-		_, err = b.DB.Query(`INSERT INTO book (title, author) VALUES ($1,$2)`, book.Title, book.Author)
+		_, err = b.DB.Query(`INSERT INTO book (title, author, year) VALUES ($1,$2,$3)`, book.Title, book.Author, book.Year)
 		if err != nil {
 			log.Fatalf("Unable to populate book table:", err)
 		}

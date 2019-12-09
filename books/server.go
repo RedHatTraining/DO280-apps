@@ -24,7 +24,10 @@ func listenAndServe(port string, books *Books) error {
 		homeTemplate.Execute(w, books.List)
 	})
 
-	r.HandleFunc("/healthz", healthzHandler)
+	r.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "ok")
+	})
 
 	srv := &http.Server{
 		Handler:      r,
@@ -35,9 +38,4 @@ func listenAndServe(port string, books *Books) error {
 
 	log.Printf("Listening on :%s", port)
 	return srv.ListenAndServe()
-}
-
-func healthzHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "ok")
 }
