@@ -7,18 +7,19 @@ import (
 	_ "github.com/lib/pq"
 )
 
-
+// Book is a simple record
 type Book struct {
 	Title, Author string
 	Year          int
 }
 
+// Books handles database interactions for lists of books
 type Books struct {
 	DB   *sql.DB
 	List []Book
 }
 
-
+// fetch retrieves a fresh list from the database
 func (b *Books) fetch() {
 	log.Printf("Fetching books")
 
@@ -28,6 +29,7 @@ func (b *Books) fetch() {
 	}
 	defer rows.Close()
 
+	// clear the List and rebuild it from the returned rows
 	b.List = []Book{}
 	var (
 		title, author string
@@ -43,14 +45,17 @@ func (b *Books) fetch() {
 	}
 }
 
+// populate creates and populates a book table from the seed
 func (b *Books) populate() {
 	log.Printf("Recreating book table")
 
+	// drop the table (in case it already exists)
 	_, err := b.DB.Query(`DROP TABLE book`)
 	if err != nil {
 		log.Printf("Unable to drop book table:", err)
 	}
 
+	// create the book table
 	_, err = b.DB.Query(`CREATE TABLE book
     (id serial primary key,
     title text NOT NULL,
@@ -60,6 +65,7 @@ func (b *Books) populate() {
 		log.Fatalf("Unable to create book table:", err)
 	}
 
+	// populate the table from the seed book list
 	log.Printf("Populating book table")
 
 	for _, book := range seed {
