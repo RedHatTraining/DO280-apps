@@ -14,7 +14,8 @@ func main() {
 		dbname:   "postgres"})
 	defer db.Close()
 
-	initBooksTable(db)
+	books := &Books{DB: db}
+	books.populate()
 
-	log.Fatal(listenAndServe("8080", db))
+	log.Fatal(listenAndServe("8080", books))
 }

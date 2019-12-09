@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
 	"html/template"
@@ -10,19 +9,21 @@ import (
 	"time"
 )
 
-// FIXME: we shouldn't need to import db here...
-
 var homeTemplate *template.Template
 
 func init() {
 	homeTemplate = template.Must(template.ParseFiles("template.html"))
 }
 
-func listenAndServe(port string, db *sql.DB) error {
+func listenAndServe(port string, books *Books) error {
 	r := mux.NewRouter()
+
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		homeHandler(w, r, db)
+		books.fetch()
+		w.WriteHeader(http.StatusOK)
+		homeTemplate.Execute(w, books.List)
 	})
+
 	r.HandleFunc("/healthz", healthzHandler)
 
 	srv := &http.Server{
@@ -34,11 +35,6 @@ func listenAndServe(port string, db *sql.DB) error {
 
 	log.Printf("Listening on :%s", port)
 	return srv.ListenAndServe()
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	w.WriteHeader(http.StatusOK)
-	homeTemplate.Execute(w, getBooks(db))
 }
 
 func healthzHandler(w http.ResponseWriter, r *http.Request) {
