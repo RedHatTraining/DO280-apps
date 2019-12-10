@@ -41,4 +41,34 @@ var seed = []Book{
 		Author: "Stephenson, Neal",
 		Year:   1999,
 	},
+	{
+		Title:  "Neuromancer",
+		Author: "Gibson, William",
+		Year:   1984,
+	},
+	{
+		Title:  "Count Zero",
+		Author: "Gibson, William",
+		Year:   1986,
+	},
+	{
+		Title:  "Virtual Light",
+		Author: "Gibson, William",
+		Year:   1993,
+	},
+	{
+		Title:  "What If?",
+		Author: "Munroe, Randall",
+		Year:   2014,
+	},
+	{
+		Title:  "Thing Explainer",
+		Author: "Munroe, Randall",
+		Year:   2015,
+	},
+	{
+		Title:  "How To",
+		Author: "Munroe, Randall",
+		Year:   2019,
+	},
 }

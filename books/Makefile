@@ -1,4 +1,5 @@
-version = v1.0.0
+version = v1.0
+repo = quay.io/redhattraining
 
 all: fmt build run
 
@@ -17,8 +18,13 @@ run:
 		-e DB_PASSWORD=password \
 		books:latest
 
+tag:
+	sudo buildah tag books:latest $(repo)/books:latest
+	sudo buildah tag books:latest $(repo)/books:$(version)
+
 push:
-	sudo buildah tag books:latest books:$(version)
+	sudo podman push $(repo)/books:latest
+	sudo podman push $(repo)/books:$(version)
 
 pg-up:
 	sudo podman run -d \

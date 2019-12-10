@@ -23,7 +23,7 @@ type Books struct {
 func (b *Books) fetch() {
 	log.Printf("Fetching books")
 
-	rows, err := b.DB.Query(`SELECT title, author, year FROM book ORDER BY author ASC`)
+	rows, err := b.DB.Query(`SELECT title, author, year FROM book ORDER BY author ASC, year ASC`)
 	if err != nil {
 		log.Fatalf("Unable to select book table:", err)
 	}

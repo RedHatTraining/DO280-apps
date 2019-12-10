@@ -21,9 +21,12 @@ WORKDIR /home
 
 COPY --from=builder /opt/app-root/src/go/src/books/books .
 COPY template.html .
-RUN chmod 444 template.html
 
-USER nobody
+RUN chmod 440 template.html && \
+    chgrp -R 0 . && \
+    chmod -R g=u .
+
+USER 1001
 EXPOSE 8080
 
 CMD ["./books"]
