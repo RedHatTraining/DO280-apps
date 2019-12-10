@@ -16,6 +16,7 @@ run:
 		-e DB_PORT=5432 \
 		-e DB_USER=user \
 		-e DB_PASSWORD=password \
+		-e DB_NAME=postgres \
 		books:latest
 
 tag:

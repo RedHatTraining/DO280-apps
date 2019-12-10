@@ -5,6 +5,16 @@ ideal in a deployment or any real scenario, but makes everything easy from an
 instructional point of view. A better approach would be to create a job that populates
 the initial data.
 
+## Environment Variables
+
+We use the following ENVs to connect to the database:
+
+  * `DB_HOST`
+  * `DB_PORT`
+  * `DB_USER`
+  * `DB_PASSWORD`
+  * `DB_NAME`
+
 ## Building
 
 A Makefile exists to avoid the burden of remembering things.

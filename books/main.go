@@ -11,7 +11,7 @@ func main() {
 		port:     os.Getenv("DB_PORT"),
 		user:     os.Getenv("DB_USER"),
 		password: os.Getenv("DB_PASSWORD"),
-		dbname:   "postgres"})
+		dbname:   os.Getenv("DB_NAME")})
 	defer db.Close()
 
 	books := &Books{DB: db}
