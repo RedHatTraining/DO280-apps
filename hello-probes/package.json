@@ -1,0 +1,18 @@
+{
+  "name": "hello-probes",
+  "main": "app.js",
+  "description": "A simple node.js app with readiness and liveness probes",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.*"
+  },
+  "engine": {
+    "node": "*",
+    "npm": "*"
+  },
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Dan Kolepp <dkolepp@redhat.com>",
+  "license": "MIT"
+}
