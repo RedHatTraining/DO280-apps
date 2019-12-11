@@ -16,6 +16,8 @@ func init() {
 }
 
 func listenAndServe(port string, books *Books) error {
+	leak := [][]byte{}
+
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -27,6 +29,14 @@ func listenAndServe(port string, books *Books) error {
 	r.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "ok")
+	})
+
+	// WARNING! This endpoint is intentionally a memory leak for demonstration purposes.
+	// We grab a large byte array and appends it to a global slice.
+	r.HandleFunc("/leak", func(w http.ResponseWriter, r *http.Request) {
+		leak = append(leak, make([]byte, 1<<31))
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "len: %d", len(leak))
 	})
 
 	srv := &http.Server{

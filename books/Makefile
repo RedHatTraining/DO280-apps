@@ -1,4 +1,4 @@
-version = v1.0
+version = v1.1
 repo = quay.io/redhattraining
 
 all: fmt build run
