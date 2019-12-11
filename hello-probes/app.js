@@ -1,5 +1,6 @@
 const fs = require('fs')
 const start_lock="/tmp/startup.lock"
+const degraded_state_file="/tmp/degraded"
 const DEFAULT_SLEEP_SECONDS = 60;
 
 var INIT_SLEEP = 0;
@@ -78,7 +79,15 @@ route.get('/ready', function(req, res) {
 
 // A route used for health check in openshift
 route.get('/health', function(req, res) {
-    res.send('OK\n');
+    if (fs.existsSync(degraded_state_file)) {
+        res.statusMessage = "Degraded State"
+        res.statusCode = 500
+        res.send('The site is experiencing unusual load.\n' + 
+                 'Please return at a later time.');
+        return
+    } else {
+        res.send('OK\n');
+    }
 });
 
 
