@@ -5,7 +5,7 @@ ideal in a deployment or any real scenario, but makes everything easy from an
 instructional point of view. A better approach would be to create a job that populates
 the initial data.
 
-We also have a /leak endpoint that grabs ~16 MB of memory and holds onto it. Hit
+We also have a /leak endpoint that grabs a few MB of memory and holds onto it. Hit
 it with curl in a loop to simulate a memory leak.
 
 ## Environment Variables
@@ -17,6 +17,9 @@ We use the following ENVs to connect to the database:
   * `DB_USER`
   * `DB_PASSWORD`
   * `DB_NAME`
+
+If the variables are not present, the application will run but not attempt to connect
+to the database. This may be useful for using the /leak endpoint, for example.
 
 ## Building
 

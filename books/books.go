@@ -21,11 +21,17 @@ type Books struct {
 
 // fetch retrieves a fresh list from the database
 func (b *Books) fetch() {
+	if b.DB == nil {
+		log.Println("Not connected to database")
+		return
+	}
+
 	log.Printf("Fetching books")
 
 	rows, err := b.DB.Query(`SELECT title, author, year FROM book ORDER BY author ASC, year ASC`)
 	if err != nil {
-		log.Fatalf("Unable to select book table:", err)
+		log.Printf("Unable to select book table:", err)
+		return
 	}
 	defer rows.Close()
 
@@ -47,12 +53,17 @@ func (b *Books) fetch() {
 
 // populate creates and populates a book table from the seed
 func (b *Books) populate() {
+	if b.DB == nil {
+		log.Println("Not connected to database")
+		return
+	}
+
 	log.Printf("Recreating book table")
 
 	// drop the table (in case it already exists)
 	_, err := b.DB.Query(`DROP TABLE book`)
 	if err != nil {
-		log.Printf("Unable to drop book table:", err)
+		log.Println("Unable to drop book table (may not exist)")
 	}
 
 	// create the book table

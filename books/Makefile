@@ -1,4 +1,4 @@
-version = v1.2
+version = v1.4
 repo = quay.io/redhattraining
 
 all: fmt build run
@@ -17,6 +17,11 @@ run:
 		-e DB_USER=user \
 		-e DB_PASSWORD=password \
 		-e DB_NAME=postgres \
+		books:latest
+
+run-without-db:
+	sudo podman run \
+		-p 8080:8080 \
 		books:latest
 
 tag:

@@ -34,7 +34,7 @@ func listenAndServe(port string, books *Books) error {
 	// WARNING! This endpoint is intentionally a memory leak for demonstration purposes.
 	// We grab a large byte array and appends it to a global slice.
 	r.HandleFunc("/leak", func(w http.ResponseWriter, r *http.Request) {
-		leak = append(leak, make([]byte, 1<<24))
+		leak = append(leak, make([]byte, 1<<28))
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "len: %d", len(leak))
 	})
