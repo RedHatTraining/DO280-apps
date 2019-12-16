@@ -59,7 +59,7 @@
       <?php
       } else { ?>
         <i class="fa fa-exclamation-triangle"/><span style="color: #993300;"><strong>
-          <?php echo 'The application is currently server over HTTP'; ?>
+          <?php echo 'The application is currently served over HTTP'; ?>
         </span></strong>
       <?php } ?>
     <ul>
