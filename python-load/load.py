@@ -12,7 +12,7 @@ from multiprocessing import cpu_count
 import signal
 
 # Change the xrange (allocation) value accordingly.
-allocation = 8192
+allocation = 1512
 
 stop_loop = 0
 def exit_chld(x, y):
