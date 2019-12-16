@@ -7,7 +7,8 @@ LABEL version="1.0" \
 
 USER 0
 RUN yum install -y --disableplugin=subscription-manager --nodocs \
-  httpd mod_ssl php php-common net-tools procps-ng \
+  httpd php php-common net-tools procps-ng \
+  mod_ssl \
   && yum clean all
 
 COPY httpd/httpd.conf /etc/httpd/conf/httpd.conf
