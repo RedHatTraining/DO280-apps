@@ -39,7 +39,7 @@ podman run --userns keep-id \
 ### Disable HTTPs support
 If you need to disable HTTPs support, run the following steps:
 
-  1. In `Dockerfile` -- comment lines 11 & 15:
+  1. In `Dockerfile` -- comment lines 11 & 20:
   ```
   # mod_ssl \
   ...
