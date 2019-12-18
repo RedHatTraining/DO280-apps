@@ -35,21 +35,25 @@ function is_ready() {
     return true;
 }
 
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 3000,
+    admin_port = process.env.ADMIN_PORT   || process.env.OPENSHIFT_NODEJS_ADMIN_PORT || 3001,
+    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+
 var express = require('express'),
     app     = express(),
+    admin_app     = express(),
     bodyParser = require('body-parser'),
     os = require('os'),
     hostname = os.hostname();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 3000,
-    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
-
 var route = express.Router();
-
 app.use('/', route);
+
+admin_app.use(bodyParser.urlencoded({ extended: true }));
+admin_app.use(bodyParser.json());
+
 
 // Start defining routes for our app/microservice
 
@@ -65,34 +69,39 @@ route.get('/', function(req, res) {
 });
 
 // A route used for the readiness probe in openshift
-route.get('/ready', function(req, res) {
+admin_app.get('/ready', function(req, res) {
     if (is_ready()) {
-        res.send('READY\n');
+        res.send(hostname + ' is READY\n');
     } else {
         res.statusMessage = "Service Not ready";
         res.statusCode = 503;
-        res.send('NOT READY\n');
+        res.send(hostname + ' is NOT READY\n');
     }
 
 });
 
 
 // A route used for health check in openshift
-route.get('/health', function(req, res) {
+admin_app.get('/health', function(req, res) {
     if (fs.existsSync(degraded_state_file)) {
         res.statusMessage = "Degraded State"
         res.statusCode = 500
-        res.send('The site is experiencing unusual load.\n' + 
+        res.send('The ' + hostname + ' host is experiencing unusual load.\n' + 
                  'Please return at a later time.');
         return
     } else {
-        res.send('OK\n');
+        res.send(hostname + ' is healthy.\n');
     }
 });
 
 
+admin_app.listen(admin_port, ip);
 app.listen(port, ip);
 console.log('nodejs server running on http://%s:%s', ip, port);
+console.log('nodejs admin server running on http://%s:%s', ip, admin_port);
 
-module.exports = app;
 
+module.exports = {
+    app,
+    admin_app
+};
