@@ -42,3 +42,5 @@ pg-up:
 
 pg-down:
 	sudo podman rm -f postgres
+
+.PHONY: fmt build run run-without-db tag push pg-up pg-down
