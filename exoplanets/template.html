@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Exoplanets</title>
+  <style>
+    body {
+      margin: 2em;
+      font-size: 100%;
+      line-height: 1.5;
+      background-color: black;
+      color: white;
+    }
+
+    h1 {
+      color: #fc0;
+    }
+
+    section h1 {
+      color: #09c;
+    }
+
+    table {
+      border: solid 1px #039;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    table thead {
+      background-color: #039;
+    }
+
+    td, th {
+      padding: 0.2em 0.5em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Exoplanets</h1>
+
+  <p>
+    The planets listed here are a small subset of the known planets found outside of our solar system.
+    Mass and radius are listed in "Jupiter mass" and "Jupiter radius" units. The orbital period is measured in Earth days.
+    The full dataset is available from the <a href="https://github.com/openexoplanetcatalogue/open_exoplanet_catalogue/">Open Exoplanet Catalogue</a>.
+  </p>
+
+  {{range .}}
+  <section>
+    <h1>{{.Name}}</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Mass</th>
+          <th>Radius</th>
+          <th>Period</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{.Mass}}</td>
+          <td>{{.Radius}}</td>
+          <td>{{.Period}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  {{end}}
+
+</body>
+
+</html>

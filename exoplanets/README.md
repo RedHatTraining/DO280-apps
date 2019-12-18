@@ -1,15 +1,15 @@
 A simple example application for use with PostgreSQL.
 
-Books also features a /leak endpoint that grabs a few MB of memory and holds onto
-it. Hit it with curl in a loop to simulate a memory leak.
 
+## Similarities to the Books Application
 
-## Similarities to the Exoplanets Application
-
-This application is similar to the "exoplanets" application in the same repository, and
+This application is similar to the "books" application in the same repository, and
 there is currently some code duplication between the two. We considered combining
 the applications into a single codebase, but the forking logic to juggle different
 datasets and templates proved more complex than the value.
+
+The exoplanets application does not include the "memory leak" feature that is
+available in the books application.
 
 
 ## Table Drop Warning
@@ -31,7 +31,16 @@ We use the following ENVs to connect to the database:
   * `DB_NAME`
 
 If the variables are not present, the application will run but not attempt to connect
-to the database. This may be useful for using the /leak endpoint, for example.
+to the database.
+
+
+## Fetching Exoplanets
+
+The exoplanet data comes from the [Open Exoplanet Catalogue](https://github.com/openexoplanetcatalogue/open_exoplanet_catalogue/).
+We've included a script in this repository that pulls data from the catalog and
+then outputs a small subset of the planets as a Go struct. This approach makes it
+easy to refresh the data: `python3 fetch_planets.py > seed.go`
+
 
 ## Building
 
