@@ -1,0 +1,13 @@
+oc debug node/#yournodename
+chroot /host
+mkdr /tmp/newdir
+cd /tmp/newdir
+curl https://raw.githubusercontent.com/RedHatTraining/DO280-apps/master/famous-quotes/Dockerfile > Dockerfile
+curl https://raw.githubusercontent.com/RedHatTraining/DO280-apps/master/famous-quotes/layout.html > layout.html
+curl https://raw.githubusercontent.com/RedHatTraining/DO280-apps/master/famous-quotes/main.go > main.go
+podman build .
+podman images
+podman login -u kubeadmin -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
+podman tag 8aaa992a1ab5 image-registry.openshift-image-registry.svc:5000/openshift/famous-quotes
+podman push image-registry.openshift-image-registry.svc:5000/openshift/famous-quotes
+oc new-app --docker-image=image-registry.openshift-image-registry.svc:5000/openshift/famous-quotes --insecure-registry
