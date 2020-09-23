@@ -1,0 +1,8 @@
+This build assumes that a secret will be created with tls.key and tls.crt and
+that the secret will be mounted to /run/secrets/nginx/
+
+$ oc create secret tls <SECRET-NAME> --from-file tls.crt=<PATH-TO-CERT> \
+  --from-file tls.key=<PATH-TO-KEY>
+
+$ oc set volume deployment/<DEPLOYMENT-NAME> --add --type secret \
+  --mount-path /run/secrets/nginx --secret-name <SECRET-NAME>
