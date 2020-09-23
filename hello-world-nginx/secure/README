@@ -1,8 +1,38 @@
-This build assumes that a secret will be created with tls.key and tls.crt and
-that the secret will be mounted to /run/secrets/nginx/
+1. Build the application:
 
-$ oc create secret tls <SECRET-NAME> --from-file tls.crt=<PATH-TO-CERT> \
-  --from-file tls.key=<PATH-TO-KEY>
+   $ oc new-app --name <APP-NAME> https://github.com/RedHatTraining/DO280-apps \
+     --context-dir hello-world-nginx/secure
 
-$ oc set volume deployment/<DEPLOYMENT-NAME> --add --type secret \
-  --mount-path /run/secrets/nginx --secret-name <SECRET-NAME>
+2. Use an Ansible playbook to generate the Certificate Authority files. This 
+   playbook creates /etc/pki/tls/certs/classroom-ca.pem and
+   /etc/pki/tls/private/classroom-ca-key.pem.
+   Additionally, it configures the local system to trust certificates signed by
+   the Certificate Authority.
+
+   $ ansible-playbook classroom-ca.yml
+
+3. Use an Ansible playbook to generate a certificate for the application.
+   The cert_name variable is used for the hostname used in the certificate.
+   The hostname becomes: <CERT-NAME>.apps.ocp4.example.com
+   The playbook creates the certificate at /etc/pki/tls/certs/<CERT-NAME>.pem.
+   An additional certificate that appends the Certificate Authority certificate
+   is created at /etc/pki/tls/certs/<CERT-NAME>-combined.pem. The associated key
+   for the certificate is created at /etc/pki/tls/private/<CERT-NAME>-key.pem.
+
+   $ ansible-playbook custom.yml -e cert_name=<CERT-NAME>
+
+4. Create a TLS secret using the certificate and key:
+
+   $ oc create secret tls <SECRET-NAME> \
+     --cert=/etc/pki/tls/certs/<CERT-NAME>-combined.pem \
+     --key=/etc/pki/tls/private/<CERT-NAME>-key.pem
+
+5. Mount the secret to /run/secrets/nginx/ within the pod:
+
+   $ oc set volume deployment/<APP-NAME> --add --type secret \
+     --mount-path /run/secrets/nginx --secret-name <SECRET-NAME>
+
+6. Create a passthrough route:
+
+   $ oc create route passthrough --service <SERVICE-NAME> --port 8443 \
+     --hostname <CERT-NAME>.apps.ocp4.example.com
