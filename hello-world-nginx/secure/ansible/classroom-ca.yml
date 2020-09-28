@@ -1,0 +1,72 @@
+---
+- name: Configure Classroom Certificate Authority
+  hosts: localhost
+  vars:
+    ca_cert_path: /etc/pki/tls/certs
+    ca_private_path: /etc/pki/tls/private
+    organization_name: Red Hat, Inc.
+    organizational_unit_name: Training
+    locality_name: Raleigh
+    state_or_province_name: NC
+    country_name: US
+    ca_cert_name: classroom-ca
+    ca_comment: GLS Training Classroom Certificate Authority
+
+  tasks:
+    - name: Check if {{ ca_cert_name }}-key.pem exists
+      stat:
+        path: "{{ ca_private_path }}/{{ ca_cert_name }}-key.pem"
+      register: ca_key_pem
+
+    - name: Generate a CA private key
+      openssl_privatekey:
+        path: "{{ ca_private_path }}/{{ ca_cert_name }}-key.pem"
+        mode: '400'
+      when: ca_key_pem.stat.exists|bool == False
+
+    - name: Check if {{ ca_cert_name }}.pem exists
+      stat:
+        path: "{{ ca_cert_path }}/{{ ca_cert_name }}.pem"
+      register: ca_cert_pem
+
+    - block:
+        - name: Generate a CA certifcate signing request
+          openssl_csr:
+            path: "{{ ca_cert_path }}/{{ ca_cert_name }}.csr"
+            privatekey_path: "{{ ca_private_path }}/{{ ca_cert_name }}-key.pem"
+            common_name: "{{ ca_comment }}"
+            organization_name: "{{ organization_name }}"
+            organizational_unit_name: "{{ organizational_unit_name }}"
+            locality_name: "{{ locality_name }}"
+            state_or_province_name: "{{ state_or_province_name }}"
+            country_name: "{{ country_name }}"
+            basic_constraints: ['CA:TRUE']
+
+        - name: Generate a CA self-signed certificate
+          openssl_certificate:
+            path: "{{ ca_cert_path }}/{{ ca_cert_name }}.pem"
+            provider: selfsigned
+            privatekey_path: "{{ ca_private_path }}/{{ ca_cert_name }}-key.pem"
+            csr_path: "{{ ca_cert_path }}/{{ ca_cert_name }}.csr"
+
+        - name: Add comment to top of {{ ca_cert_name }}.pem
+          lineinfile:
+            insertbefore: BOF
+            path: "{{ ca_cert_path }}/{{ ca_cert_name }}.pem"
+            line: "# {{ ca_comment }}"
+            state: present
+
+        - name: Create a certificate hard-link in /etc/pki/ca-trust/source/anchors/
+          file:
+            src: "{{ ca_cert_path }}/{{ ca_cert_name }}.pem"
+            dest: /etc/pki/ca-trust/source/anchors/{{ ca_cert_name }}.pem
+            state: hard
+
+        - name: Remove the CA CSR file
+          file:
+            path: "{{ ca_cert_path }}/{{ ca_cert_name }}.csr"
+            state: absent
+      when: ca_cert_pem.stat.exists|bool == False
+
+    - name: Configure system to trust {{ ca_cert_name }}.pem
+      command: /usr/bin/update-ca-trust extract

@@ -1,0 +1,170 @@
+---
+- name: Create Custom Certificate
+  hosts: localhost
+  vars:
+    ca_cert_file: /etc/pki/tls/certs/classroom-ca.pem
+    ca_private_key: /etc/pki/tls/private/classroom-ca-key.pem
+    cert_path: /tmp/certs
+    organization_name: Red Hat, Inc.
+    organizational_unit_name: Training
+    locality_name: Raleigh
+    state_or_province_name: NC
+    country_name: US
+    # Replace with your wildcard_domain. This can be found with:
+    # oc get ingresses.config.openshift.io/cluster -o jsonpath='{.spec.domain}'
+    wildcard_domain: apps.ocp4.example.com
+    cert_name: hello-secure
+    combined_name: "{{ cert_name }}-combined"
+    # The project (namespace) variable can be passed when running this playbook.
+    # Alternatively, pass cert_hostname with the FQDN for the certificate.
+    # If you do pass cert_hostname, you will likely want to pass cert_name as well.
+    cert_hostname: "{% if cert_name == 'api' %}{{ cert_name }}.{{ wildcard_domain | regex_replace('apps.') }}{% else %}{{ cert_name }}{% if project is defined %}-{{ project }}{% endif %}.{{ wildcard_domain }}{% endif %}"
+    cert_comment: Hello World Certificate
+    default_user: student
+    not_after: "+3650d"
+    update_cert: false
+
+  tasks:
+    - name: "Classroom CA: Check if {{ ca_cert_file }} exists"
+      stat:
+        path: "{{ ca_cert_file }}"
+      register: ca_cert_pem
+
+    - name: "Classroom CA: Fail if {{ ca_cert_file }} does not exist"
+      fail:
+        msg: File "{{ ca_cert_file }}" does not exist.
+      when: ca_cert_pem.stat.exists|bool == False
+
+    - name: "Classroom CA: Check if {{ ca_private_key }} exists"
+      stat:
+        path: "{{ ca_private_key }}"
+      register: ca_key_pem
+
+    - name: "Classroom CA: Fail if {{ ca_private_key }} does not exist"
+      fail:
+        msg: File "{{ ca_private_key }}" does not exist.
+      when: ca_key_pem.stat.exists|bool == False
+
+    - name: Check if {{ cert_name }}.pem exists in /etc/pki/tls/certs/
+      stat:
+        path: "/etc/pki/tls/certs/{{ cert_name }}.pem"
+      register: cert_pem
+
+    - name: Check if {{ cert_name }}.pem exists in {{ cert_path }}
+      stat:
+        path: "{{ cert_path }}/{{ cert_name }}.pem"
+      register: desired_cert_pem
+
+    - name: Check if {{ cert_name }}-key.pem exists in /etc/pki/tls/private/
+      stat:
+        path: "/etc/pki/tls/private/{{ cert_name }}-key.pem"
+      register: key_pem
+
+    - name: Ensure certs directory exist
+      file:
+        path: "{{ cert_path }}"
+        state: directory
+        owner: "{{ default_user }}"
+        group: "{{ default_user }}"
+        mode: '775'
+
+    - name: Create a hard-link to the private key
+      file:
+        src: /etc/pki/tls/private/{{ cert_name }}-key.pem
+        dest: "{{ cert_path }}/{{ cert_name }}-key.pem"
+        state: hard
+      when: key_pem.stat.exists == True
+
+    - name: Create a hard-link to the certificate
+      file:
+        src: /etc/pki/tls/certs/{{ cert_name }}.pem
+        dest: "{{ cert_path }}/{{ cert_name }}.pem"
+        state: hard
+      when:
+        - cert_pem.stat.exists == True
+        - desired_cert_pem.stat.exists|bool == False
+        - update_cert|bool == False
+
+    - name: Remove certificate hard link
+      file:
+        path: /etc/pki/tls/certs/{{ cert_name }}.pem
+        state: absent
+      when: update_cert | bool
+
+    - block:
+        - name: Generate a {{ cert_name }} private key
+          openssl_privatekey:
+            path: "{{ cert_path }}/{{ cert_name }}-key.pem"
+            mode: '400'
+            owner: "{{ default_user }}"
+            group: "{{ default_user }}"
+
+        - name: Create a hard-link to the private key
+          file:
+            src: "{{ cert_path }}/{{ cert_name }}-key.pem"
+            dest: /etc/pki/tls/private/{{ cert_name }}-key.pem
+            state: hard
+
+        - name: Generate a {{ cert_name }} certificate signing request
+          openssl_csr:
+            path: "{{ cert_path }}/{{ cert_name }}.csr"
+            privatekey_path: "{{ cert_path }}/{{ cert_name }}-key.pem"
+            common_name: "{{ cert_hostname }}"
+            subject_alt_name: "DNS:{{ cert_hostname }}"
+            organization_name: "{{ organization_name }}"
+            organizational_unit_name: "{{ organizational_unit_name }}"
+            locality_name: "{{ locality_name }}"
+            state_or_province_name: "{{ state_or_province_name }}"
+            country_name: "{{ country_name }}"
+
+        - name: Generate a {{ cert_name }} certificate
+          openssl_certificate:
+            path: "{{ cert_path }}/{{ cert_name }}.pem"
+            provider: ownca
+            privatekey_path: "{{ cert_path }}/{{ cert_name }}-key.pem"
+            csr_path: "{{ cert_path }}/{{ cert_name }}.csr"
+            ownca_not_after: "{{ not_after }}"
+            ownca_path: "{{ ca_cert_file }}"
+            ownca_privatekey_path: "{{ ca_private_key }}"
+            owner: "{{ default_user }}"
+            group: "{{ default_user }}"
+            force: true
+
+        - name: Add comment to top of {{ cert_name }}.pem
+          lineinfile:
+            insertbefore: BOF
+            path: "{{ cert_path }}/{{ cert_name }}.pem"
+            line: "# {{ cert_comment }}"
+            state: present
+
+        - name: Create a hard-link to the certificate
+          file:
+            src: "{{ cert_path }}/{{ cert_name }}.pem"
+            dest: /etc/pki/tls/certs/{{ cert_name }}.pem
+            state: hard
+          when: cert_pem.stat.exists|bool == False or update_cert|bool == True
+
+        - name: Remove the CSR file
+          file:
+            path: "{{ cert_path }}/{{ cert_name }}.csr"
+            state: absent
+      when: (cert_pem.stat.exists|bool == False and key_pem.stat.exists|bool == False) or update_cert|bool == True
+
+    - name: Check if {{ combined_name }}.pem exists in /etc/pki/tls/certs/
+      stat:
+        path: "/etc/pki/tls/certs/{{ combined_name }}.pem"
+      register: combined_pem
+
+    - name: Create a combined certificate
+      shell: "cat /etc/pki/tls/certs/{{ cert_name }}.pem {{ ca_cert_file }} > /etc/pki/tls/certs/{{ combined_name }}.pem"
+      changed_when: false
+      register: create_combined
+      when: combined_pem.stat.exists|bool == False or update_cert|bool == True
+
+    - name: Create a hard-link to the combined certificate
+      file:
+        src: "/etc/pki/tls/certs/{{ combined_name }}.pem"
+        dest: "{{ cert_path }}/{{ combined_name }}.pem"
+        state: hard
+      when: create_combined.rc == 0
+
