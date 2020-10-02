@@ -12,7 +12,7 @@ LABEL summary="$SUMMARY" \
       io.openshift.expose-services="8000:quotes" \
       io.openshift.tags="poc,mysql,golang" \
       name="redhattraining/famous-quotes" \
-      version="1.0" \
+      version="2.1" \
       usage="docker run -d -e QUOTES_USER=user -e QUOTES_PASSWORD=pass -e QUOTES_DATABASE=db -p 8000:8000 redhattraining/famous-quotes" \
       maintainer="Iván Chavero <ichavero@chavero.com.mx>"
 
