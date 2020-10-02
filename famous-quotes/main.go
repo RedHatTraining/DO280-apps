@@ -102,7 +102,7 @@ func setup() {
 	var rows string
 	var messages = []string{
 		"When words fail, music speaks.\n- William Shakespeare\n",
-		"Happines depends upon ourselves.\n- Aristotle\n",
+		"Happiness depends upon ourselves.\n- Aristotle\n",
 		"The secret of change is to focus all your energy not on fighting the old but on building the new.\n- Socrates\n",
 		"Nothing that glitters is gold.\n- Mark Twain",
 		"Imagination is more important than knowledge.\n- Albert Einstein\n",
