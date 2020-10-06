@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Books Example Application</title>
+  <style>
+    body {
+      margin: 2em;
+      font-size: 100%;
+      line-height: 1.5
+      background-color: white;
+    }
+
+    table {
+      border: solid 1px #abc;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    table thead {
+      background-color: #abc;
+    }
+
+    tr:nth-child(even) {
+      background-color: #def;
+    }
+
+    td, th {
+      padding: 0.5em 1em;
+    }
+  </style>
+</head>
+
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>Author</th>
+        <th>Title</th>
+        <th>Year</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .}}
+      <tr>
+        <td>{{.Author}}</td>
+        <td>{{.Title}}</td>
+        <td>{{.Year}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</body>
+
+</html>
