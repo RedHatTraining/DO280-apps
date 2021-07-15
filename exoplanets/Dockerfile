@@ -2,6 +2,7 @@
 
 FROM registry.redhat.io/ubi8/go-toolset:1.12.8 AS builder
 
+RUN mkdir -p $HOME/go/src/exoplanets
 WORKDIR $HOME/go/src/exoplanets
 COPY *.go .
 

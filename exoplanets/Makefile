@@ -1,5 +1,5 @@
-version = v1.0
-repo = quay.io/redhattraining
+version = v1.1.3
+repo = quay.io/ffapitalle
 
 all: fmt build run
 
