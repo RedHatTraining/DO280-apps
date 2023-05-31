@@ -1,4 +1,5 @@
 kind: Kustomization
-namespace: dev-app
 commonLabels:
   app: todonodejs
+bases:
+- ../../base/frontend

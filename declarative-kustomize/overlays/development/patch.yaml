@@ -1,11 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
+  name: frontend
 spec:
+  replicas: <CHANGE_ME>
   template:
     spec:
       containers:
       - resources:
           limits:
             cpu: <CHANGE_ME>
+            memory: <CHANGE_ME>

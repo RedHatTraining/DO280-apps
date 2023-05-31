@@ -1,3 +1,6 @@
 kind: Kustomization
 commonLabels:
   app: todonodejs
+bases:
+- mysql
+- frontend

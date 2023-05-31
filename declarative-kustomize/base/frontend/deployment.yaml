@@ -18,9 +18,22 @@ spec:
         name: frontend
     spec:
       containers:
-      - resources:
+      - startupProbe:
+          failureThreshold: 30
+          periodSeconds: 3
+          httpGet:
+            path: /health
+            port: 3000
+        livenessProbe:
+          failureThreshold: 3
+          periodSeconds: 3
+          httpGet:
+            path: /health
+            port: 3000
+        resources:
           limits:
-            cpu: '0.5'
+            cpu: 300m
+            memory: 512Mi
         image: quay.io/redhattraining/php-webapp-mysql:v1
         name: todonodejs
         ports:

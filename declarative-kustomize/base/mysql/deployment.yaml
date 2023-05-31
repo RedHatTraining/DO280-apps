@@ -20,6 +20,10 @@ spec:
       containers:
       - image: registry.ocp4.example.com:8443/rhel8/mysql-80:latest
         name: mysql
+        resources:
+          limits:
+            cpu: 300m
+            memory: 512Mi
         env:
         - name: MYSQL_DATABASE
           valueFrom:
