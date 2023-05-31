@@ -3,4 +3,3 @@ commonLabels:
   app: todonodejs
 bases:
 - ../../base/frontend
-- ../../base/mysql
