@@ -1,0 +1,6 @@
+kind: Kustomization
+commonLabels:
+  app: todonodejs
+resources:
+- service.yaml
+- deployment.yaml

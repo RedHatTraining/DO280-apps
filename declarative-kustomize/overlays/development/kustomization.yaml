@@ -1,0 +1,4 @@
+kind: Kustomization
+namespace: dev-app
+commonLabels:
+  app: todonodejs

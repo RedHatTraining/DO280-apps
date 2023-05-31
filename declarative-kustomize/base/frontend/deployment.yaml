@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: todonodejs
+    name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todonodejs
+      name: frontend
+  template:
+    metadata:
+      labels:
+        app: todonodejs
+        name: frontend
+    spec:
+      containers:
+      - resources:
+          limits:
+            cpu: '0.5'
+        image: quay.io/redhattraining/php-webapp-mysql:v1
+        name: todonodejs
+        ports:
+        - containerPort: 8080
+          name: nodejs-http
+        env:
+        - name: MYSQL_ENV_MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: database
+        - name: MYSQL_ENV_MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: user
+        - name: MYSQL_ENV_MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: password
+        - name: APP_PORT
+          value: '8080'

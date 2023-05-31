@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: <CHANGE_ME>
+  template:
+    spec:
+      containers:
+      - startupProbe:
+          failureThreshold: <CHANGE_ME>
+          periodSeconds: <CHANGE_ME>
+          httpGet:
+            path: <CHANGE_ME>
+            port: <CHANGE_ME>
+        livenessProbe:
+          failureThreshold: <CHANGE_ME>
+          periodSeconds: <CHANGE_ME>
+          httpGet:
+            path: <CHANGE_ME>
+            port: <CHANGE_ME>

@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: todonodejs
+    name: frontend
+  name: frontend-rt
+spec:
+  to:
+    kind: Service
+    name: frontend
+    weight: 100
+  wildcardPolicy: None

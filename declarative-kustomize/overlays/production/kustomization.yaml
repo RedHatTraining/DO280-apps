@@ -1,0 +1,7 @@
+kind: Kustomization
+commonLabels:
+  app: todonodejs
+bases:
+- ../../base
+- ../../base/mysql
+- ../../base/frontend
