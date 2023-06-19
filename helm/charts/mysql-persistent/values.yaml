@@ -1,0 +1,9 @@
+database_service_name: mysql
+memory_limit: 512Mi
+mysql_database: testdb
+mysql_password: testp # TODO: must define a default value for .mysql_password'
+mysql_root_password: testur # TODO: must define a default value for .mysql_root_password'
+mysql_user: testu # TODO: must define a default value for .mysql_user'
+mysql_version: 8.0-el8
+namespace: openshift
+volume_capacity: 1Gi

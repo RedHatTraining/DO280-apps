@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "database_service_name": {
+            "type": "string",
+            "pattern": "^[a-z0-9-_]+$"
+        },
+        "namespace": {
+            "type": "string"
+        },
+        "mysql_database": {
+            "type": "string"
+        },
+        "mysql_password": {
+            "type": "string"
+        },
+        "mysql_root_password": {
+            "type": "string"
+        },
+        "mysql_user": {
+            "type": "string"
+        },
+        "volume_capacity": {
+            "type": "string",
+            "title": "Persistent Volume Size",
+            "form": true,
+            "render": "slider",
+            "sliderMin": 1,
+            "sliderMax": 100,
+            "sliderUnit": "Gi"
+        },
+        "memory_limit": {
+            "type": "string",
+            "title": "Database memory limit",
+            "form": true,
+            "render": "slider",
+            "sliderMin": 512,
+            "sliderMax": 65536,
+            "sliderUnit": "Mi"
+        },
+        "mysql_version": {
+            "type": "string",
+            "description": "Specify mysql imagestream tag",
+            "enum": [ "latest", "8.0-el9", "8.0-el8", "8.0-el7" ]
+        }
+    }
+}
+

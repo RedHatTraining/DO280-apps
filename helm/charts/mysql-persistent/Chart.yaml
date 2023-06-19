@@ -1,0 +1,18 @@
+dependencies:
+- name: mysql-imagestreams
+  version: "0.0.1"
+  repository: https://github.com/openshift-helm-charts/charts
+description: |-
+  This content is expermental, do not use it in production. MySQL database service, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/mysql-container/blob/master/8.0/root/usr/share/container-scripts/mysql/README.md.
+
+  NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
+name: mysql-persistent
+tags: database,mysql
+version: 0.0.2
+annotations:
+  charts.openshift.io/name: Red Hat MySQL database service, with persistent storage (experimental).
+apiVersion: v2
+appVersion: 0.0.2
+kubeVersion: '>=1.20.0'
+sources:
+  - https://github.com/sclorg/helm-charts

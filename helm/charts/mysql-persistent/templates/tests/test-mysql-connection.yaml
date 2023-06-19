@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-connection-test"
+  namespace: "{{ .Release.Namespace }}"
+  annotations:
+    "helm.sh/hook": test
+  labels:
+    name: {{ .Values.database_service_name }}
+spec:
+  #serviceAccount: {{ .Values.serviceAccount }}
+  containers:
+    - name: "mysql-connection-test"
+      image: "registry.redhat.io/rhel8/mysql-80:latest"
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: MARIADB_USER
+          value: "{{ .Values.mysql_user }}"
+        - name: MARIADB_PASSWORD
+          value: "{{ .Values.mysql_password }}"
+        - name: MARIADB_DATABASE
+          value: "{{ .Values.mysql_database }}"
+      command:
+        - /bin/bash
+        - -ec
+        - "echo \"SELECT 42 as testval\\g\" | mysql --connect-timeout=15 -h {{ .Values.database_service_name }} $MARIADB_DATABASE -u$MARIADB_USER -p$MARIADB_PASSWORD"
+  restartPolicy: Never
