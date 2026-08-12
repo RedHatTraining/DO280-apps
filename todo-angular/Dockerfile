@@ -1,10 +1,10 @@
 
-FROM registry.access.redhat.com/ubi8:8.0
+FROM registry.access.redhat.com/ubi10:10.2
 
 LABEL version="1.0" \
   description="A simple To Do Application" \
   creationDate="2017-12-25" \
-  updatedDate="2019-11-28"
+  updatedDate="2026-08-12"
 
 RUN yum install -y --disableplugin=subscription-manager --nodocs \
   nginx nginx-mod-http-perl \
