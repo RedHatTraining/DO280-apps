@@ -1,0 +1,35 @@
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: DB_USERNAME
+          valueFrom:
+             secretKeyRef:
+               name: my-database-secret
+               key: user
+        - name: DB_PASSWORD
+          valueFrom:
+             secretKeyRef:
+               name: my-database-secret
+               key: password
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+            scheme: HTTP
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 8080
+            scheme: HTTP
+          failureThreshold: 2
+          initialDelaySeconds: 60
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 1
